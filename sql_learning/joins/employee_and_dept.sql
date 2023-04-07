@@ -28,9 +28,6 @@ insert into dept values(200,'IT');
 insert into dept values(300,'HR');
 insert into dept values(400,'Text Analytics');
 
-select * from employee;
-select * from dept;
-
 # 1. write a query to print dep name and average salary of employees in that dep
 select d.dep_name, avg(e.salary)
 from
@@ -51,3 +48,28 @@ on e.dept_id = d.dep_id
 group by d.dep_name
 having count(1) = count(distinct e.salary)
 ;
+
+# 3. write a query to print dep name for which there is no employee
+select dep_name from(
+	select d.dep_id, d.dep_name, e.dept_id as emp_dept
+	from 
+	dept as d
+	left join
+	employee as e
+	on d.dep_id = e.dept_id
+) as t
+where emp_dept is null;
+
+# 4. write a query to print employees name for dep id is not avaiable in dept table
+select emp_name from (
+	select e.emp_name, d.dep_id 
+    from
+    employee as e
+    left join
+    dept as d
+    on e.dept_id = d.dep_id
+) as t
+where dep_id is null;
+
+select * from employee;
+select * from dept;
