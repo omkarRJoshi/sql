@@ -55,7 +55,7 @@ select distinct(city) from(
 where returned_id is null
 order by city;
 
-## right ans
+## right ans - reason: same oarder_id can have return item
 select city
 from superstore_orders o
 left join returns r on o.order_id=r.order_id

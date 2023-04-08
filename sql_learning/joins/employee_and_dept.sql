@@ -32,7 +32,7 @@ insert into dept values(400,'Text Analytics');
 select d.dep_name, avg(e.salary)
 from
 dept as d
-left join
+inner join
 employee as e
 on d.dep_id = e.dept_id
 group by d.dep_name
@@ -61,6 +61,7 @@ select dep_name from(
 where emp_dept is null;
 
 # 4. write a query to print employees name for dep id is not avaiable in dept table
+## approach 1
 select emp_name from (
 	select e.emp_name, d.dep_id 
     from
@@ -70,6 +71,15 @@ select emp_name from (
     on e.dept_id = d.dep_id
 ) as t
 where dep_id is null;
+
+## approach 2
+select e.emp_name
+from
+employee as e
+left join
+dept as d
+on e.dept_id = d.dep_id
+where d.dep_id is null;
 
 select * from employee;
 select * from dept;
