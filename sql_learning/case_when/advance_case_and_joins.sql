@@ -21,11 +21,12 @@ select * from returns;
 select s.Sub_Category, date_format(s.order_date, '%m') 
 from
 superstore_orders as s
-inner join
+left join
 returns as r
 on s.order_id = r.order_id
+where date_format(s.order_date, '%m')  = 11
 group by s.Sub_Category
-having some(date_format(s.order_date, '%m') = 7)
+having count(r.order_id) = 0
 ;
 
 # 3. orders table can have multiple rows for a particular order_id when customers buys more than 1 product in an order.
