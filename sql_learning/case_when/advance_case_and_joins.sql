@@ -49,7 +49,7 @@ group by emp2.emp_name;
 # Assume that all order date and ship date are on weekdays only
 select * from superstore_orders limit 5;
 select 
-order_date, str_to_date(ship_date, '%d-%m-%y'), 
+order_date, str_to_date(ship_date, '%d-%m-%Y'), 
 (
 	datediff(str_to_date(ship_date, '%d-%m-%Y'), order_date) - 
 	(week(str_to_date(ship_date, '%d-%m-%Y')) - week(Order_Date)) - 
@@ -71,9 +71,51 @@ group by s.Category;
 
 # 7. write a query to print below 3 columns
 # category, total_sales_2019(sales in year 2019), total_sales_2020(sales in year 2020)
-select year(order_date) as order_year, sum(sales) as total_slaes
+select category, 
+sum(case when year(order_date) = 2019 then sales else 0 end) as sales_2019,
+sum(case when year(order_date) = 2020 then sales else 0 end) as sales_2020
 from 
 superstore_orders
 where year(order_date) in (2019, 2020)
-group by order_year
+group by category
 ;
+
+# 8. write a query print top 5 cities in west region by average no of days between order date and ship date.
+select city, avg(datediff(str_to_date(ship_date, '%d-%m-%Y'), order_date)) as date_diff
+from 
+superstore_orders
+where Region = 'west'
+group by city
+order by date_diff desc
+limit 5
+;
+
+# 9. write a query to print emp name, manager name and senior manager name (senior manager is manager's manager)
+## my solution: needs 3 joins | less efficient
+select j1.emp_name, j1.manager_name, j2.manager_name as super_manager_name from 
+(
+	select emp1.emp_id, emp1.emp_name, emp2.emp_id as manager_id, emp2.emp_name as manager_name
+	from 
+	employee as emp1
+	inner join 
+	employee as emp2
+	on emp1.manager_id = emp2.emp_id
+) as j1
+inner join 
+(
+	select emp1.emp_id, emp1.emp_name, emp2.emp_id as manager_id, emp2.emp_name as manager_name
+	from 
+	employee as emp1
+	inner join 
+	employee as emp2
+	on emp1.manager_id = emp2.emp_id
+) as j2
+on j1.manager_id = j2.emp_id;
+
+## course solution: needs 2 joins | more efficient
+select emp1.emp_name, emp2.emp_name as manager_name, emp3.emp_name as super_manager_name
+from 
+employee as emp1 
+inner join employee as emp2 on emp1.manager_id = emp2.emp_id
+inner join employee as emp3 on emp2.manager_id = emp3.emp_id
+
