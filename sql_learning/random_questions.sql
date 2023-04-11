@@ -14,7 +14,9 @@ select * from icc_world_cup;
 
 # 1. write a query to produce below output from icc_world_cup table.
 # team_name, no_of_matches_played , no_of_wins , no_of_losses
-select team_name, total_matches, coalesce(no_of_wins, 0), total_matches - coalesce(no_of_wins, 0) as no_of_losses from
+
+## approach 1
+select team_name, total_matches, coalesce(no_of_wins, 0) as no_of_wins, total_matches - coalesce(no_of_wins, 0) as no_of_losses from
 (select team_name, count(1) as total_matches from(
 select team_1 as team_name from icc_world_cup
 union all
@@ -25,6 +27,23 @@ left join
 (select winner, count(1) as no_of_wins from icc_world_cup
 group by winner) as w
 on m.team_name = w.winner;
+
+## approach 2
+select team_name, count(1) as total_matches, sum(win_flag) as no_of_wins, count(1) - sum(win_flag) as no_of_loss from
+(
+	select 
+	team_1 as team_name
+	, case when team_1 = winner then 1 else 0 end as win_flag 
+	from icc_world_cup
+	union all
+	select
+	team_2 as team_name
+	, case when team_2 = winner then 1 else 0 end as win_flag 
+	from icc_world_cup
+) as t
+group by team_name;
+
+select * from icc_world_cup;
 
 #Run below script to create drivers table:
 create table drivers(id varchar(10), start_time time, end_time time, start_loc varchar(10), end_loc varchar(10));
